@@ -25,5 +25,7 @@ public:
 	AAura();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
+	void InitGas();
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 };

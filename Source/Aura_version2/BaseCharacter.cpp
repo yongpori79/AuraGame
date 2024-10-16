@@ -3,6 +3,8 @@
 
 #include "BaseCharacter.h"
 
+
+
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -11,6 +13,9 @@ ABaseCharacter::ABaseCharacter()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	
+	
 }
 
 // Called when the game starts or when spawned
@@ -18,6 +23,11 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 // Called every frame

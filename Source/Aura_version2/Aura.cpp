@@ -3,6 +3,8 @@
 
 #include "Aura.h"
 
+#include "AbilitySystemComponent.h"
+#include "AuraPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -32,4 +34,25 @@ void AAura::BeginPlay()
 void AAura::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+}
+
+void AAura::InitGas()
+{
+	AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState());
+	check(AuraPlayerState)
+	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
+	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AuraPlayerState->GetAttributeSet();
+}
+
+void AAura::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	InitGas();
+}
+
+void AAura::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	InitGas();
 }
