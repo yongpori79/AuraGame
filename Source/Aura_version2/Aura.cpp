@@ -4,6 +4,8 @@
 #include "Aura.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraAbilitySystemComponent.h"
+#include "AuraAttributeSet.h"
 #include "AuraPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -41,8 +43,8 @@ void AAura::InitGas()
 	AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState());
 	check(AuraPlayerState)
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
-	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
-	AttributeSet = AuraPlayerState->GetAttributeSet();
+	AbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent());
+	AttributeSet = Cast<UAuraAttributeSet>(AuraPlayerState->GetAttributeSet());
 }
 
 void AAura::PossessedBy(AController* NewController)
