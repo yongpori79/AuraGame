@@ -13,6 +13,9 @@
 struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature, float, NewMana);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
+
 
 UCLASS(BlueprintType, Blueprintable)
 class AURA_VERSION2_API UOverlayWidgetController : public UAuraWidgetController
@@ -26,7 +29,13 @@ public:
 	FOnHealthChangedSignature OnHealthChanged;
 	UPROPERTY(EditAnywhere, BlueprintAssignable)
 	FOnMaxHealthChangedSignature OnMaxHealthChanged;
+	UPROPERTY(EditAnywhere, BlueprintAssignable)
+	FOnManaChangedSignature OnManaChanged;
+	UPROPERTY(EditAnywhere, BlueprintAssignable)
+	FOnMaxManaChangedSignature OnMaxManaChanged;
 
 	void HealthChange(const FOnAttributeChangeData& data) ;
 	void MaxHealthChange(const FOnAttributeChangeData& data) ;
+	void ManaChange(const FOnAttributeChangeData& data) ;
+	void MaxManaChange(const FOnAttributeChangeData& data) ;
 };

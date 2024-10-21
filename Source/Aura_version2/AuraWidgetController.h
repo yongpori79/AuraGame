@@ -47,7 +47,7 @@ public:
 
 	UAuraWidgetController();
 	UFUNCTION(BlueprintCallable)
-	void SetAuraWidgetControllerParameters(const FAuraWidgetControllerParam& params);
+	void SetAuraWidgetControllerParameters(const FAuraWidgetControllerParam& Params);
 	virtual void BroadcastInitialValue();
 	virtual void BindCallbackDependencies();
 };

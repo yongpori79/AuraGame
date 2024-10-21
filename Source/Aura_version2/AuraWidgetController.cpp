@@ -7,12 +7,12 @@ UAuraWidgetController::UAuraWidgetController()
 {
 }
 
-void UAuraWidgetController::SetAuraWidgetControllerParameters(const FAuraWidgetControllerParam& params)
+void UAuraWidgetController::SetAuraWidgetControllerParameters(const FAuraWidgetControllerParam& Params)
 {
-	PlayerController = params.PlayerController;
-	PlayerState = params.PlayerState;
-	AbilitySystemComponent = params.AbilitySystemComponent;
-	AttributeSet = params.AttributeSet;
+	PlayerController = Params.PlayerController;
+	PlayerState = Params.PlayerState;
+	AbilitySystemComponent = Params.AbilitySystemComponent;
+	AttributeSet = Params.AttributeSet;
 }
 
 void UAuraWidgetController::BroadcastInitialValue()

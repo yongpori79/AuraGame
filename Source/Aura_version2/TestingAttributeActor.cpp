@@ -32,7 +32,7 @@ void ATestingAttributeActor::OnTestOverlap(UPrimitiveComponent* OverlappedCompon
 	{
 		const UAuraAttributeSet* Aura = Cast<UAuraAttributeSet>(Interface->GetAbilitySystemComponent()->GetAttributeSet(UAuraAttributeSet::StaticClass()));
 		UAuraAttributeSet* MutableAura = const_cast<UAuraAttributeSet*>(Aura);
-		MutableAura->SetHealth(MutableAura->GetHealth() + 30.f);
+		MutableAura->SetMana(MutableAura->GetMana() + 30.f);
 		Destroy();
 	}
 }
