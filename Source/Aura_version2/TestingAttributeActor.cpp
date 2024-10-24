@@ -3,6 +3,7 @@
 
 #include "TestingAttributeActor.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemInterface.h"
 #include "AuraAttributeSet.h"
 #include "Components/SphereComponent.h"
@@ -12,31 +13,67 @@ ATestingAttributeActor::ATestingAttributeActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	TestSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
-	TestSphere->SetupAttachment(RootComponent);
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("Scene")));
 }
 
 // Called when the game starts or when spawned
 void ATestingAttributeActor::BeginPlay()
 {
 	Super::BeginPlay();
-	TestSphere->OnComponentBeginOverlap.AddDynamic(this, &ATestingAttributeActor::OnTestOverlap);
 }
 
-void ATestingAttributeActor::OnTestOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATestingAttributeActor::ApplyEffectToTarget(AActor* ToTarget, TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
-	if(IAbilitySystemInterface* Interface = Cast<IAbilitySystemInterface>(OtherActor))
+	UAbilitySystemComponent*  TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ToTarget);
+	if(TargetASC==nullptr)return;
+
+	check(GameplayEffectClass);
+	FGameplayEffectContextHandle GameplayEffectContextHandle = TargetASC->MakeEffectContext();
+	GameplayEffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, ActorLevel, GameplayEffectContextHandle);
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+
+	const bool bIsInfinity = EffectSpecHandle.Data.Get()->Def.Get()->DurationPolicy==EGameplayEffectDurationType::Infinite;
+	if(bIsInfinity && InfiniteEffectRemovePolicy==EEffectRemovePolicy::RemoveOnOverlap)
 	{
-		const UAuraAttributeSet* Aura = Cast<UAuraAttributeSet>(Interface->GetAbilitySystemComponent()->GetAttributeSet(UAuraAttributeSet::StaticClass()));
-		UAuraAttributeSet* MutableAura = const_cast<UAuraAttributeSet*>(Aura);
-		MutableAura->SetMana(MutableAura->GetMana() + 30.f);
-		Destroy();
+		ActiveEffectHandles.Add(ActiveGameplayEffectHandle, TargetASC);
 	}
 }
 
-// Called every frame
+void ATestingAttributeActor::OnOverlap(AActor* Target)
+{
+	if(InfiniteEffectApplicationPolicy ==EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(Target, InfiniteGameplayEffectClass);
+	}
+}
+
+void ATestingAttributeActor::OnEndOverlap(AActor* Target)
+{
+	if(InfiniteEffectApplicationPolicy ==EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToTarget(Target, InfiniteGameplayEffectClass);
+	}
+	if(InfiniteEffectRemovePolicy == EEffectRemovePolicy::RemoveOnOverlap)
+	{
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
+		if(!IsValid(TargetASC))return;
+
+		TArray<FActiveGameplayEffectHandle> HandleToRemove;
+		for(TPair<FActiveGameplayEffectHandle, UAbilitySystemComponent*> HandlePair : ActiveEffectHandles )
+		{
+			if(TargetASC==HandlePair.Value)
+			{
+				TargetASC->RemoveActiveGameplayEffect(HandlePair.Key);
+				HandleToRemove.Add(HandlePair.Key);
+			}
+		}
+		for(FActiveGameplayEffectHandle& Handle : HandleToRemove)
+		{
+			ActiveEffectHandles.FindAndRemoveChecked(Handle);
+		}
+	}
+}
+
 
 

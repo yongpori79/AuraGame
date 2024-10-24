@@ -33,6 +33,9 @@ public:
 	FOnManaChangedSignature OnManaChanged;
 	UPROPERTY(EditAnywhere, BlueprintAssignable)
 	FOnMaxManaChangedSignature OnMaxManaChanged;
+	
+
+	
 
 	void HealthChange(const FOnAttributeChangeData& data) ;
 	void MaxHealthChange(const FOnAttributeChangeData& data) ;

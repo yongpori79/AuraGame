@@ -44,5 +44,5 @@ void AAuraHUD::InitOverlay(APlayerController* InPlayerController, APlayerState* 
 		WidgetController->BroadcastInitialValue();
 		Widget->AddToViewport();
 	}
-	
+		
 }
